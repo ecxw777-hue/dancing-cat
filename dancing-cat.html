@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dancing Cat</title>
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #ffffff;
+      overflow: hidden;
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #ff6b9d, #c44dff, #6e7dff);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 3s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.3); }
+    }
+
+    /* ---- Cat ---- */
+    .dancing-cat {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cat-svg {
+      width: 250px;
+      height: 250px;
+      filter: drop-shadow(0 0 20px rgba(255, 159, 67, 0.3));
+      transition: filter 0.3s ease;
+    }
+
+    .dance-floor {
+      position: absolute;
+      bottom: -20px;
+      width: 200px;
+      height: 40px;
+      background: radial-gradient(ellipse, rgba(255, 107, 157, 0.4) 0%, transparent 70%);
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .playing .dance-floor {
+      opacity: 1;
+      animation: floor-pulse 1s ease-in-out infinite;
+    }
+
+    .playing .cat-svg {
+      animation: bounce 0.6s ease-in-out infinite;
+      filter: drop-shadow(0 0 30px rgba(255, 159, 67, 0.6));
+    }
+
+    .playing .cat-left-arm {
+      transform-origin: 65px 140px;
+      animation: wave-left 0.4s ease-in-out infinite alternate;
+    }
+
+    .playing .cat-right-arm {
+      transform-origin: 135px 140px;
+      animation: wave-right 0.4s ease-in-out infinite alternate;
+    }
+
+    .playing .cat-tail {
+      transform-origin: 60px 175px;
+      animation: wag-tail 0.5s ease-in-out infinite alternate;
+    }
+
+    .playing .cat-eyes {
+      animation: blink 2.5s ease-in-out infinite;
+    }
+
+    .playing .cat-whisker {
+      animation: twitch-whisker 0.8s ease-in-out infinite alternate;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      25% { transform: translateY(-15px) rotate(2deg); }
+      50% { transform: translateY(0) rotate(-2deg); }
+      75% { transform: translateY(-10px) rotate(1deg); }
+    }
+
+    @keyframes wave-left {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(-25deg); }
+    }
+
+    @keyframes wave-right {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(25deg); }
+    }
+
+    @keyframes wag-tail {
+      from { transform: rotate(-15deg); }
+      to { transform: rotate(15deg); }
+    }
+
+    @keyframes blink {
+      0%, 42%, 48%, 100% { transform: scaleY(1); }
+      45% { transform: scaleY(0.1); }
+    }
+
+    @keyframes twitch-whisker {
+      from { transform: translateY(0); }
+      to { transform: translateY(-2px); }
+    }
+
+    @keyframes floor-pulse {
+      0%, 100% { transform: scale(1); opacity: 0.4; }
+      50% { transform: scale(1.2); opacity: 0.8; }
+    }
+
+    /* ---- Button ---- */
+    .control-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.8rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, #6e7dff, #c44dff);
+      color: #ffffff;
+      box-shadow: 0 4px 15px rgba(110, 125, 255, 0.4);
+    }
+
+    .control-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(110, 125, 255, 0.6);
+    }
+
+    .control-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 10px rgba(110, 125, 255, 0.3);
+    }
+
+    .control-btn.playing {
+      background: linear-gradient(135deg, #ff6b9d, #ff9f43);
+      box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+    }
+
+    .control-btn.playing:hover {
+      box-shadow: 0 6px 25px rgba(255, 107, 157, 0.6);
+    }
+
+    .btn-icon { font-size: 1.2rem; }
+    .btn-text { letter-spacing: 0.5px; }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 600px) {
+      h1 { font-size: 1.6rem; }
+      .app { gap: 1.5rem; padding: 1rem; }
+      .cat-svg { width: 180px; height: 180px; }
+      .dance-floor { width: 140px; height: 30px; bottom: -15px; }
+      .control-btn { padding: 0.6rem 1.5rem; font-size: 1rem; }
+    }
+
+    @media (min-width: 1200px) {
+      .cat-svg { width: 320px; height: 320px; }
+      .dance-floor { width: 260px; height: 50px; bottom: -25px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>Dancing Cat</h1>
+
+    <div class="dancing-cat playing" id="catContainer">
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="cat-svg">
+        <!-- Left ear -->
+        <polygon points="50,70 65,20 80,70" fill="#ff9f43" stroke="#e17055" stroke-width="2" />
+        <polygon points="55,65 65,30 75,65" fill="#ffcccc" />
+        <!-- Right ear -->
+        <polygon points="120,70 135,20 150,70" fill="#ff9f43" stroke="#e17055" stroke-width="2" />
+        <polygon points="125,65 135,30 145,65" fill="#ffcccc" />
+        <!-- Head -->
+        <ellipse cx="100" cy="90" rx="55" ry="45" fill="#ff9f43" stroke="#e17055" stroke-width="2" />
+        <!-- Eyes -->
+        <g class="cat-eyes">
+          <ellipse cx="80" cy="85" rx="8" ry="10" fill="#2d3436" />
+          <ellipse cx="120" cy="85" rx="8" ry="10" fill="#2d3436" />
+          <circle cx="83" cy="82" r="3" fill="#ffffff" />
+          <circle cx="123" cy="82" r="3" fill="#ffffff" />
+        </g>
+        <!-- Nose -->
+        <polygon points="100,95 96,100 104,100" fill="#e17055" />
+        <!-- Mouth & Whiskers -->
+        <path d="M 96,102 Q 100,108 104,102" fill="none" stroke="#e17055" stroke-width="1.5" />
+        <path d="M 92,100 Q 80,108 70,105" fill="none" stroke="#e17055" stroke-width="1.5" class="cat-whisker" />
+        <path d="M 92,103 Q 80,112 68,110" fill="none" stroke="#e17055" stroke-width="1.5" class="cat-whisker" />
+        <path d="M 108,100 Q 120,108 130,105" fill="none" stroke="#e17055" stroke-width="1.5" class="cat-whisker" />
+        <path d="M 108,103 Q 120,112 132,110" fill="none" stroke="#e17055" stroke-width="1.5" class="cat-whisker" />
+        <!-- Body -->
+        <ellipse cx="100" cy="155" rx="40" ry="35" fill="#ff9f43" stroke="#e17055" stroke-width="2" />
+        <ellipse cx="100" cy="158" rx="25" ry="22" fill="#ffeaa7" />
+        <!-- Left arm -->
+        <g class="cat-left-arm">
+          <path d="M 65,140 Q 40,155 45,170" fill="none" stroke="#ff9f43" stroke-width="12" stroke-linecap="round" />
+          <circle cx="45" cy="172" r="7" fill="#ff9f43" stroke="#e17055" stroke-width="1.5" />
+        </g>
+        <!-- Right arm -->
+        <g class="cat-right-arm">
+          <path d="M 135,140 Q 160,155 155,170" fill="none" stroke="#ff9f43" stroke-width="12" stroke-linecap="round" />
+          <circle cx="155" cy="172" r="7" fill="#ff9f43" stroke="#e17055" stroke-width="1.5" />
+        </g>
+        <!-- Tail -->
+        <path class="cat-tail" d="M 60,175 Q 30,170 25,150 Q 20,130 35,125" fill="none" stroke="#ff9f43" stroke-width="8" stroke-linecap="round" />
+      </svg>
+      <div class="dance-floor"></div>
+    </div>
+
+    <button class="control-btn playing" id="toggleBtn" aria-label="Pause dancing" onclick="toggle()">
+      <span class="btn-icon" id="btnIcon">⏸</span>
+      <span class="btn-text" id="btnText">Pause</span>
+    </button>
+  </div>
+
+  <script>
+    let isPlaying = true;
+
+    function toggle() {
+      isPlaying = !isPlaying;
+      const container = document.getElementById('catContainer');
+      const btn = document.getElementById('toggleBtn');
+      const icon = document.getElementById('btnIcon');
+      const text = document.getElementById('btnText');
+
+      if (isPlaying) {
+        container.classList.add('playing');
+        btn.classList.add('playing');
+        btn.setAttribute('aria-label', 'Pause dancing');
+        icon.textContent = '⏸';
+        text.textContent = 'Pause';
+      } else {
+        container.classList.remove('playing');
+        btn.classList.remove('playing');
+        btn.setAttribute('aria-label', 'Start dancing');
+        icon.textContent = '▶';
+        text.textContent = 'Dance!';
+      }
+    }
+  </script>
+</body>
+</html>
